@@ -1,0 +1,39 @@
+Teste das 16 combinações
+ m | A B C D | Original | POS | A+BC+D | NAND | Programa | Igual
+---+---------+----------+-----+--------+------+----------+------
+ 0 | 0 0 0 0 |    0     |  0  |   0    |  0   |    0     | sim
+ 1 | 0 0 0 1 |    1     |  1  |   1    |  1   |    1     | sim
+ 2 | 0 0 1 0 |    0     |  0  |   0    |  0   |    0     | sim
+ 3 | 0 0 1 1 |    1     |  1  |   1    |  1   |    1     | sim
+ 4 | 0 1 0 0 |    0     |  0  |   0    |  0   |    0     | sim
+ 5 | 0 1 0 1 |    1     |  1  |   1    |  1   |    1     | sim
+ 6 | 0 1 1 0 |    1     |  1  |   1    |  1   |    1     | sim
+ 7 | 0 1 1 1 |    1     |  1  |   1    |  1   |    1     | sim
+ 8 | 1 0 0 0 |    1     |  1  |   1    |  1   |    1     | sim
+ 9 | 1 0 0 1 |    1     |  1  |   1    |  1   |    1     | sim
+10 | 1 0 1 0 |    1     |  1  |   1    |  1   |    1     | sim
+11 | 1 0 1 1 |    1     |  1  |   1    |  1   |    1     | sim
+12 | 1 1 0 0 |    1     |  1  |   1    |  1   |    1     | sim
+13 | 1 1 0 1 |    1     |  1  |   1    |  1   |    1     | sim
+14 | 1 1 1 0 |    1     |  1  |   1    |  1   |    1     | sim
+15 | 1 1 1 1 |    1     |  1  |   1    |  1   |    1     | sim
+
+16 de 16 combinações iguais em todas as formas.
+
+test_decidir_fora_de_0_1 (tests.test_logica.TestEntradas.test_decidir_fora_de_0_1) ... ok
+test_respostas_invalidas (tests.test_logica.TestEntradas.test_respostas_invalidas) ... ok
+test_respostas_validas (tests.test_logica.TestEntradas.test_respostas_validas) ... ok
+test_vetor (tests.test_logica.TestEntradas.test_vetor) ... ok
+test_mintermos_e_maxtermos (tests.test_logica.TestEquivalencia.test_mintermos_e_maxtermos) ... ok
+test_todas_as_16_combinacoes (tests.test_logica.TestEquivalencia.test_todas_as_16_combinacoes) ... ok
+test_aviso_canal_nao_oficial (tests.test_logica.TestInterface.test_aviso_canal_nao_oficial) ... ok
+test_aviso_inconsistencia (tests.test_logica.TestInterface.test_aviso_inconsistencia) ... ok
+test_fluxo_isento (tests.test_logica.TestInterface.test_fluxo_isento) ... ok
+test_fluxo_nao_isento (tests.test_logica.TestInterface.test_fluxo_nao_isento) ... ok
+test_resposta_invalida_repete (tests.test_logica.TestInterface.test_resposta_invalida_repete) ... ok
+test_tres_erros_encerra (tests.test_logica.TestInterface.test_tres_erros_encerra) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.002s
+
+OK

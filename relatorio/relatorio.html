@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Relatório Técnico - Citizen Assist AI (GS26_2)</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  :root {
+    --bg: #ffffff; --card: #ffffff; --ink: #1b1f24; --muted: #555e6b; --line: #c9cfd7;
+    --accent: #0b6e4f; --accent-soft: #e3f3ec; --off: #9aa3ae; --on: #12a150;
+    --g1: #2563eb; --g2: #c2410c; --g3: #7c3aed; --hl: #fff2a8; --warn-soft: #fff4e0; --warn: #9a5b00;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 10.5pt/1.5 "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20pt; margin: 0 0 6px; }
+  h2 { font-size: 14pt; margin: 22px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--accent); break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 14px 0 6px; break-after: avoid; }
+  p { margin: 6px 0; text-align: justify; }
+  .pb { break-before: page; }
+  .capa { height: 255mm; display: flex; flex-direction: column; justify-content: space-between; }
+  .capa .topo { color: var(--muted); font-size: 11pt; }
+  .capa .meio h1 { font-size: 26pt; line-height: 1.2; }
+  .capa .meio .sub { font-size: 14pt; color: var(--accent); margin-top: 8px; }
+  .capa .meio .tema { margin-top: 18px; font-size: 12pt; }
+  .capa table { width: auto; }
+  .capa .base { font-size: 10.5pt; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 9.5pt; break-inside: avoid; }
+  th, td { border: 1px solid var(--line); padding: 4px 6px; vertical-align: top; }
+  th { background: #eef1f4; text-align: left; }
+  .tv td, .tv th { text-align: center; font-family: Consolas, monospace; padding: 2px 6px; }
+  .tv tr.um td.s { background: var(--accent-soft); font-weight: 700; }
+  .mono, code { font-family: Consolas, "Courier New", monospace; }
+  .eq { font-family: Consolas, monospace; font-size: 11pt; background: #f4f6f8; border-left: 3px solid var(--accent);
+    padding: 6px 10px; margin: 8px 0; break-inside: avoid; }
+  .passos td:first-child { width: 28px; text-align: center; }
+  .passos td:nth-child(2) { font-family: Consolas, monospace; white-space: nowrap; }
+  .aviso { background: var(--warn-soft); border-left: 4px solid var(--warn); padding: 8px 12px; margin: 10px 0; }
+  figure { margin: 10px 0; break-inside: avoid; text-align: center; }
+  figure img { max-width: 100%; border: 1px solid var(--line); }
+  figure img.sim { max-height: 108mm; }
+  figcaption { font-size: 9pt; color: var(--muted); margin-top: 4px; }
+  .fig-circ { max-width: 100%; margin: 0 auto; }
+  .c-svg { width: 100%; height: auto; display: block; }
+  .c-wire { fill: none; stroke: var(--off); stroke-width: 2; }
+  .c-wire.on { stroke: var(--on); stroke-width: 2.6; }
+  .c-dot { fill: var(--off); } .c-dot.on { fill: var(--on); }
+  .c-gate { fill: #fff; stroke: var(--ink); stroke-width: 1.8; } .c-gate.on { fill: var(--accent-soft); }
+  .c-led { fill: #fff; stroke: var(--ink); stroke-width: 2; } .c-led.on { fill: var(--on); }
+  .c-lbl { font: 13px Consolas, monospace; fill: var(--ink); }
+  .c-in { font: bold 13px Consolas, monospace; fill: var(--ink); }
+  .c-gname { font: 10px "Segoe UI", sans-serif; fill: var(--muted); text-anchor: middle; }
+  .c-small { font: 11px Consolas, monospace; fill: var(--muted); }
+  .c-val { font: bold 11px Consolas, monospace; fill: var(--accent); }
+  .c-out { font: bold 13px Consolas, monospace; fill: var(--ink); text-anchor: middle; }
+  .k-svg { max-width: 300px; margin: 0 auto; }
+  .k-cell { fill: #fff; stroke: var(--line); } .k-cell.hl { fill: var(--hl); }
+  .k-val { font: bold 18px Consolas, monospace; fill: var(--ink); text-anchor: middle; }
+  .k-m { font: 10px Consolas, monospace; fill: var(--muted); text-anchor: middle; paint-order: stroke; stroke: #fff; stroke-width: 3px; }
+  .k-grp { fill: none; stroke-width: 2.5; }
+  .k-g1 { stroke: var(--g1); } .k-g2 { stroke: var(--g2); stroke-dasharray: 7 4; } .k-g3 { stroke: var(--g3); stroke-dasharray: 2 3; }
+  .dois { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+  .ok { color: var(--accent); font-weight: 700; }
+  ul, ol { margin: 6px 0; padding-left: 22px; }
+  li { margin: 2px 0; }
+  .ref li { margin-bottom: 6px; word-break: break-word; }
+  .small { font-size: 9pt; color: var(--muted); }
+  pre { font: 9pt/1.35 Consolas, monospace; background: #f4f6f8; padding: 8px 10px; border: 1px solid var(--line); white-space: pre-wrap; break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<section class="capa">
+  <div class="topo">Ciência da Computação · 1º ano · Turma 1CC<br>Disciplina: Computer Science · Global Solution GS26_2</div>
+  <div class="meio">
+    <h1>Citizen Assist AI<br>Módulo de Decisão Lógica</h1>
+    <div class="sub">Relatório técnico</div>
+    <div class="tema"><b>Situação de atendimento:</b> orientação ao cidadão sobre a isenção da taxa de inscrição
+      do Enem.</div>
+  </div>
+  <div class="base">
+    <table>
+      <tr><th>Integrante</th><th>RM</th></tr>
+      <tr><td>Lucas Klein da Veiga</td><td>570029</td></tr>
+      <tr><td>Alexandre Rizzi de Mattos</td><td>569621</td></tr>
+      <tr><td>Miguel Putini</td><td>571624</td></tr>
+    </table>
+    <p>São Paulo, novembro de 2026</p>
+  </div>
+</section>
+
+<section class="pb">
+  <h2>Sumário</h2>
+  <ol>
+    <li>Descrição do problema</li>
+    <li>Regras de orientação e fontes</li>
+    <li>Variáveis e saída</li>
+    <li>Tabela-verdade</li>
+    <li>Expressões canônicas</li>
+    <li>Simplificação por álgebra booleana</li>
+    <li>Teoremas de De Morgan</li>
+    <li>Mapa de Karnaugh</li>
+    <li>Circuitos lógicos</li>
+    <li>Implementação</li>
+    <li>Testes</li>
+    <li>Limitações e privacidade</li>
+    <li>Instruções de execução</li>
+    <li>Referências</li>
+  </ol>
+
+  <h2>1. Descrição do problema</h2>
+  <p>Muitos estudantes não sabem se têm direito à isenção da taxa do Enem. Alguns deixam de pedir e pagam sem
+    precisar, outros pedem sem se encaixar em nenhum critério e têm o pedido reprovado. O Citizen Assist AI é um
+    assistente de orientação ao cidadão, e a parte de Computer Science é o módulo que decide qual orientação dar:
+    com quatro perguntas de sim ou não, ele indica se o perfil da pessoa bate com algum critério de isenção e qual
+    é o próximo passo.</p>
+  <p>Escolhemos esse caso porque o próprio edital escreve a regra como uma lógica: a pessoa é isenta se atender
+    a "ao menos um" dos requisitos (OU), e um desses requisitos exige duas condições ao mesmo tempo (E). Assim cada
+    condição vira uma variável booleana e a regra vira uma função de quatro entradas.</p>
+  <p>O módulo pode ser testado separado do resto do assistente: a função <code>decidir(a, b, c, d)</code> recebe
+    quatro bits e devolve a saída S (ver seção 11).</p>
+
+  <h2>2. Regras de orientação e fontes</h2>
+  <p>A regra vem do item 2.3 do Edital Inep nº 21, de 25 de março de 2026 (DOU de 01/04/2026, Seção 3, p. 79),
+    que trata da isenção da taxa do Enem 2026:</p>
+  <div class="eq" style="font-family:inherit;font-size:10pt">"2.3 Será isento do pagamento da taxa de inscrição no Enem 2026 o participante que preencha
+    ao menos um dos seguintes requisitos: 2.3.1 Estar cursando a última série do ensino médio no ano de 2026
+    [...] em escola da rede pública [...]; 2.3.2 Ter cursado todo o ensino médio em escola da rede pública ou como
+    bolsista integral na rede privada e ter renda per capita igual ou inferior a um salário mínimo e meio,
+    conforme [...] Lei nº 12.799, de 10 de abril de 2013; ou 2.3.3 Declarar situação de vulnerabilidade
+    socioeconômica, por ser membro de família de baixa renda, nos termos do art. 5º do Decreto nº 11.016 [...], e que
+    está inscrito no Cadastro Único [...] (CadÚnico)."</div>
+  <table>
+    <tr><th style="width:12%">Regra</th><th>O que usamos no modelo</th><th style="width:30%">Fonte (consultada em 16/11/2026)</th></tr>
+    <tr><td>R1 (2.3.1)</td><td>Quem está na última série do ensino médio em escola pública tem isenção.</td><td>Edital Inep nº 21/2026, item 2.3.1</td></tr>
+    <tr><td>R2 (2.3.2)</td><td>Quem fez todo o ensino médio na rede pública (ou com bolsa integral) e tem renda per capita de até 1,5 salário mínimo tem isenção.</td><td>Edital, item 2.3.2; Lei nº 12.799/2013, art. 1º, parágrafo único</td></tr>
+    <tr><td>R3 (2.3.3)</td><td>Quem é de família de baixa renda (até ½ salário mínimo per capita) inscrita no CadÚnico, com NIS válido, tem isenção.</td><td>Edital, itens 2.3.3 e 2.3.3.1; Decreto nº 11.016/2022, art. 5º, II</td></tr>
+    <tr><td>R4</td><td>Basta atender a um dos critérios.</td><td>Edital, item 2.3 ("ao menos um")</td></tr>
+    <tr><td>Contexto</td><td>O pedido é feito na Página do Participante com login gov.br. Ter a isenção aprovada não dispensa a inscrição. O prazo do Enem 2026 foi prorrogado até 30/04/2026.</td><td>Edital, itens 1.2, 1.6 e 2.1; Agência Gov (13/04/2026); MEC (prorrogação)</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>3. Variáveis e saída</h2>
+  <table>
+    <tr><th style="width:7%">Var.</th><th>Pergunta feita ao cidadão</th><th style="width:22%">1</th><th style="width:22%">0</th></tr>
+    <tr><td><b>A</b></td><td>Está cursando a última série do ensino médio em escola pública este ano?</td><td>sim</td><td>não (outra série, escola particular ou já terminou)</td></tr>
+    <tr><td><b>B</b></td><td>Fez todo o ensino médio em escola pública ou como bolsista integral em escola particular?</td><td>sim</td><td>não (pelo menos uma parte em escola particular sem bolsa integral)</td></tr>
+    <tr><td><b>C</b></td><td>A renda familiar per capita é de até 1,5 salário mínimo?</td><td>sim</td><td>não (mais de 1,5 SM por pessoa)</td></tr>
+    <tr><td><b>D</b></td><td>A família é de baixa renda e está inscrita no CadÚnico, com NIS válido?</td><td>sim</td><td>não (não inscrita ou só com protocolo)</td></tr>
+  </table>
+  <table>
+    <tr><th style="width:7%">Saída</th><th style="width:20%">Valor</th><th>Orientação mostrada</th></tr>
+    <tr><td rowspan="2"><b>S</b></td><td>S = 1 (compatível)</td><td>"Seu perfil é compatível com a isenção da taxa do Enem." Em seguida o programa diz qual critério foi atendido e orienta a pedir a isenção na Página do Participante (enem.inep.gov.br/participante), dentro do prazo, lembrando que a inscrição continua sendo necessária.</td></tr>
+    <tr><td>S = 0 (não compatível)</td><td>"Pelas respostas, seu perfil não se enquadra nos critérios de isenção do item 2.3 do edital." Orienta a fazer a inscrição e pagar a taxa. Se faltar só uma das condições do critério 2.3.2, mostra uma observação.</td></tr>
+  </table>
+  <p>Numeramos as linhas por <span class="mono">m = 8A + 4B + 2C + D</span> (A é o bit mais significativo). As
+    16 combinações podem acontecer, então não usamos <i>don't care</i>. A combinação D=1 e C=0 é estranha, porque
+    família de baixa renda no CadÚnico tem renda de até ½ SM. Mesmo assim o critério 2.3.3 é conferido pelo Inep
+    direto no CadÚnico, sem depender da renda que a pessoa declara. Por isso o modelo segue o edital (S=1) e o
+    programa só mostra um aviso pedindo para a pessoa conferir a resposta C.</p>
+</section>
+
+<section class="pb">
+  <h2>4. Tabela-verdade</h2>
+  <p>Aplicamos as regras R1 a R4 em cada uma das 16 combinações. As colunas do meio mostram qual critério foi
+    atendido.</p>
+  <table class="tv" id="tv"></table>
+  <p>S = 1 em 13 linhas (m1, m3, m5, m6, m7 e m8 a m15) e S = 0 em 3 linhas (m0, m2 e m4).</p>
+
+  <h2>5. Expressões canônicas</h2>
+  <h3>5.1 Soma de mintermos</h3>
+  <div class="eq">S = Σm(1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)</div>
+  <div class="eq" style="font-size:9.5pt">S = A'B'C'D + A'B'CD + A'BC'D + A'BCD' + A'BCD + AB'C'D' + AB'C'D + AB'CD' + AB'CD
+    + ABC'D' + ABC'D + ABCD' + ABCD</div>
+  <h3>5.2 Produto de maxtermos (usado como forma original)</h3>
+  <div class="eq">S = ΠM(0, 2, 4) = (A + B + C + D) · (A + B + C' + D) · (A + B' + C + D)</div>
+  <p>Cada maxtermo só vale 0 na sua linha: M0 em 0000, M2 em 0010 e M4 em 0100. Como a função tem 13 uns e só 3
+    zeros, o produto de maxtermos fica bem menor (3 termos em vez de 13). Por isso usamos essa forma como ponto de
+    partida da simplificação e como circuito original. As duas formas dão a mesma tabela, o que foi conferido nos
+    testes.</p>
+</section>
+
+<section>
+  <h2>6. Simplificação por álgebra booleana</h2>
+  <p>Partindo do produto de maxtermos:</p>
+  <table class="passos">
+    <tr><th>#</th><th>Expressão</th><th>Propriedade</th></tr>
+    <tr><td>0</td><td>S = (A+B+C+D)(A+B+C'+D)(A+B'+C+D)</td><td>Forma canônica ΠM(0,2,4)</td></tr>
+    <tr><td>1</td><td>S = (A+B+C+D)(A+B+C'+D)·(A+B+C+D)(A+B'+C+D)</td><td>Idempotência: X = X·X (repetimos M0 para usar com M2 e com M4)</td></tr>
+    <tr><td>2</td><td>S = [(A+B+D)+C][(A+B+D)+C'] · [(A+C+D)+B][(A+C+D)+B']</td><td>Comutativa e associativa</td></tr>
+    <tr><td>3</td><td>S = [(A+B+D) + C·C'] · [(A+C+D) + B·B']</td><td>Distributiva: (X+Y)(X+Z) = X + Y·Z</td></tr>
+    <tr><td>4</td><td>S = [(A+B+D) + 0] · [(A+C+D) + 0]</td><td>Complemento: X·X' = 0</td></tr>
+    <tr><td>5</td><td>S = (A+B+D) · (A+C+D)</td><td>Identidade: X + 0 = X (POS mínima)</td></tr>
+    <tr><td>6</td><td>S = [(A+D)+B] · [(A+D)+C]</td><td>Comutativa e associativa</td></tr>
+    <tr><td>7</td><td>S = (A+D) + B·C</td><td>Distributiva: (X+Y)(X+Z) = X + Y·Z, com X = A + D</td></tr>
+    <tr><td>8</td><td>S = A + B·C + D</td><td>Comutativa (SOP mínima)</td></tr>
+  </table>
+  <p>Resultado: <b>S = A + B·C + D</b>, com 3 termos e 4 literais. Isso é a própria regra do edital: critério 1,
+    ou (escola pública e renda até 1,5 SM), ou critério 3. O passo 5, (A+B+D)(A+C+D), é a forma POS mínima.</p>
+  <p>Também conferimos pela soma de mintermos usando X·Y + X·Y' = X: os 8 mintermos com A = 1 (m8 a m15) viram
+    A, os 8 com D = 1 (m1, m3, ..., m15) viram D, e m6, m7, m14 e m15 (B = C = 1) viram BC. Como X + X = X, um
+    mintermo pode ser usado em mais de um grupo. O resultado é o mesmo: S = A + BC + D.</p>
+</section>
+
+<section>
+  <h2>7. Teoremas de De Morgan</h2>
+  <p>Teoremas: <span class="mono">(X + Y)' = X'·Y'</span> e <span class="mono">(X·Y)' = X' + Y'</span>.
+    A simplificação da seção 6 não precisou deles. Usamos De Morgan em duas transformações, as duas conferidas
+    nos testes.</p>
+  <h3>7.1 Complemento da saída</h3>
+  <table class="passos">
+    <tr><th>#</th><th>Expressão</th><th>Propriedade</th></tr>
+    <tr><td>1</td><td>S' = (A + B·C + D)'</td><td>Complemento da saída</td></tr>
+    <tr><td>2</td><td>S' = A' · (B·C)' · D'</td><td>De Morgan: (X + Y + Z)' = X'·Y'·Z'</td></tr>
+    <tr><td>3</td><td>S' = A' · (B' + C') · D'</td><td>De Morgan: (B·C)' = B' + C'</td></tr>
+  </table>
+  <p>Ou seja, a pessoa não tem isenção quando não está na última série da rede pública, não está no CadÚnico e
+    falta pelo menos uma das condições do critério 2.3.2. Com A = D = 0, (B' + C') vale 1 para BC = 00, 01 e 10,
+    que são as linhas m0, m4 e m2, justamente os três zeros da tabela. Isso confere com ΠM(0,2,4).</p>
+  <h3>7.2 Circuito só com portas NAND</h3>
+  <table class="passos">
+    <tr><th>#</th><th>Expressão</th><th>Propriedade</th></tr>
+    <tr><td>1</td><td>S = A + B·C + D</td><td>Forma simplificada</td></tr>
+    <tr><td>2</td><td>S = ((A + B·C + D)')'</td><td>Dupla negação: X = (X')'</td></tr>
+    <tr><td>3</td><td>S = (A' · (B·C)' · D')'</td><td>De Morgan na negação de dentro</td></tr>
+    <tr><td>4</td><td>S = NAND( NAND(A,A), NAND(B,C), NAND(D,D) )</td><td>X' = NAND(X,X) e (X·Y·Z)' = NAND(X,Y,Z)</td></tr>
+  </table>
+  <p>Com essa forma dá para montar o circuito usando só um tipo de porta, por exemplo só com CIs 74HC00 e
+    74HC10. O circuito está na seção 9.</p>
+</section>
+
+<section>
+  <h2>8. Mapa de Karnaugh</h2>
+  <div class="dois">
+    <figure>
+      <div id="kmap"></div>
+      <figcaption>Figura 1: mapa de Karnaugh de S (linhas AB, colunas CD em código Gray). Azul contínuo: A;
+        laranja tracejado: D; roxo pontilhado: B·C.</figcaption>
+    </figure>
+    <div>
+      <table>
+        <tr><th>Grupo</th><th>Células</th><th>Fixas</th><th>Termo</th></tr>
+        <tr><td style="color:var(--g1)"><b>1</b> (8 células)</td><td>m8 a m15 (linhas AB=11 e 10)</td><td>A = 1</td><td class="mono"><b>A</b></td></tr>
+        <tr><td style="color:var(--g2)"><b>2</b> (8 células)</td><td>m1, m3, m5, m7, m9, m11, m13, m15 (colunas CD=01 e 11)</td><td>D = 1</td><td class="mono"><b>D</b></td></tr>
+        <tr><td style="color:var(--g3)"><b>3</b> (4 células)</td><td>m6, m7, m14, m15</td><td>B = 1, C = 1</td><td class="mono"><b>B·C</b></td></tr>
+      </table>
+      <p>Os três grupos são implicantes primos essenciais: só o grupo 1 cobre m8, m10 e m12, só o grupo 2 cobre
+        m1, m3 e m5, e só o grupo 3 cobre m6. Juntos eles cobrem os 13 uns.</p>
+      <div class="eq">S = A + B·C + D</div>
+      <p>Agrupando os zeros: m0 e m2 (linha AB=00, colunas CD=00 e 10) dão (A+B+D), e m0 e m4 (coluna CD=00,
+        linhas AB=00 e 01) dão (A+C+D):</p>
+      <div class="eq">S = (A + B + D) · (A + C + D)</div>
+    </div>
+  </div>
+  <h3>Comparação com a álgebra</h3>
+  <table>
+    <tr><th>Método</th><th>SOP</th><th>POS</th><th>Observação</th></tr>
+    <tr><td>Álgebra booleana</td><td class="mono">A + B·C + D</td><td class="mono">(A+B+D)(A+C+D), passo 5</td><td>8 passos. A parte difícil foi perceber que M0 tinha que ser repetido.</td></tr>
+    <tr><td>Mapa de Karnaugh</td><td class="mono">A + B·C + D</td><td class="mono">(A+B+D)(A+C+D)</td><td>Mais rápido: 3 grupos de uns ou 2 grupos de zeros.</td></tr>
+  </table>
+  <p>Os dois métodos deram o mesmo resultado nas duas formas. O mapa também mostra que não existe expressão
+    menor, porque cada grupo já é o maior possível e todos são essenciais.</p>
+</section>
+
+<section>
+  <h2>9. Circuitos lógicos</h2>
+  <p>Os circuitos foram desenhados pelo mesmo código do simulador (<code>simulador/circuitos.js</code>), com as
+    entradas A=0, B=1, C=1, D=0. Fio verde é nível 1, e o número ao lado de cada porta é a saída dela.</p>
+  <figure><div class="fig-circ" id="c-original" style="max-width:640px"></div>
+    <figcaption>Figura 2: circuito original, feito a partir do produto de maxtermos ΠM(0,2,4).</figcaption></figure>
+  <div class="dois">
+    <figure><div class="fig-circ" id="c-simplificado"></div>
+      <figcaption>Figura 3: circuito simplificado, S = A + B·C + D.</figcaption></figure>
+    <figure><div class="fig-circ" id="c-nand"></div>
+      <figcaption>Figura 4: circuito só com NAND (seção 7.2).</figcaption></figure>
+  </div>
+  <h3>Contagem de portas</h3>
+  <p>Usamos o mesmo critério para todos: cada porta conta 1, não importa quantas entradas tenha, e o NOT também
+    conta como porta. Para comparar melhor, também convertemos cada porta de n entradas em n − 1 portas de 2
+    entradas e contamos o total de entradas de porta.</p>
+  <table>
+    <tr><th>Circuito</th><th>Portas</th><th>Total de portas</th><th>Em portas de 2 entradas</th><th>Entradas de porta</th></tr>
+    <tr><td>Soma de mintermos (só para referência)</td><td>4 NOT + 13 AND(4) + 1 OR(13)</td><td>18</td><td>4 + 39 + 12 = 55</td><td>4 + 52 + 13 = 69</td></tr>
+    <tr><td><b>Original</b> (ΠM(0,2,4))</td><td>2 NOT + 3 OR(4) + 1 AND(3)</td><td><b>6</b></td><td>2 + 9 + 2 = <b>13</b></td><td>2 + 12 + 3 = <b>17</b></td></tr>
+    <tr><td><b>Simplificado</b> (A + B·C + D)</td><td>1 AND(2) + 1 OR(3)</td><td><b>2</b></td><td>1 + 2 = <b>3</b></td><td>2 + 3 = <b>5</b></td></tr>
+    <tr><td>Só NAND</td><td>3 NAND(2) + 1 NAND(3)</td><td>4</td><td>3 + 3 = 6*</td><td>6 + 3 = 9</td></tr>
+  </table>
+  <p>O circuito simplificado usa 2 portas em vez de 6 (67% a menos) e 3 portas de 2 entradas em vez de 13 (77% a
+    menos), sem nenhum inversor. <span class="small">* Uma NAND de 3 entradas vira 3 NANDs de 2 entradas:
+    NAND(NOT(NAND(x,y)), z), com o NOT feito por uma NAND com as entradas ligadas.</span></p>
+</section>
+
+<section class="pb">
+  <h2>10. Implementação</h2>
+  <h3>10.1 Arquivos</h3>
+  <table>
+    <tr><th>Arquivo</th><th>Conteúdo</th></tr>
+    <tr><td class="mono">citizen_assist/logica.py</td><td>A função em todas as formas: regra original (do jeito que está no edital), soma de mintermos, produto de maxtermos, forma simplificada e forma NAND. É a parte de Computer Science e pode ser testada sozinha.</td></tr>
+    <tr><td class="mono">citizen_assist/assistente.py</td><td>Programa de linha de comando: perguntas, tratamento de entradas inválidas, orientação, aviso e limitações. A decisão usa a forma simplificada.</td></tr>
+    <tr><td class="mono">tests/test_logica.py</td><td>12 testes com unittest: as 16 combinações, entradas válidas e inválidas e o fluxo do atendimento.</td></tr>
+    <tr><td class="mono">simulador/index.html, circuitos.js</td><td>Simulador que abre no navegador: chaves A a D, circuito original, simplificado e NAND, mapa de Karnaugh e teste das 16 linhas.</td></tr>
+  </table>
+  <h3>10.2 Entradas inválidas</h3>
+  <ul>
+    <li>O programa aceita <code>s</code>, <code>sim</code>, <code>1</code>, <code>n</code>, <code>não</code>, <code>nao</code> e <code>0</code>, com letra maiúscula ou minúscula.</li>
+    <li>Qualquer outra resposta ("talvez", "2", vazio) mostra "Resposta não reconhecida. Responda S (sim) ou N (não)." e repete a pergunta. Depois de 3 erros o atendimento termina sem resultado.</li>
+    <li>Na opção <code>--entradas</code> e no simulador é preciso digitar exatamente 4 dígitos 0 ou 1. Fora disso aparece uma mensagem explicando o formato.</li>
+    <li>A função <code>decidir()</code> recusa valores diferentes de 0 e 1.</li>
+    <li>Para D=1 e C=0 o resultado segue o edital, mas aparece um aviso para conferir a resposta C.</li>
+  </ul>
+  <h3>10.3 Programa em execução</h3>
+  <figure><img src="img/terminal_interativo.png" alt="Execução do programa">
+    <figcaption>Figura 5: respostas N, S, S, N. Resultado S = 1 pelo critério 2.3.2.</figcaption></figure>
+  <figure><img src="img/terminal_invalido.png" alt="Entradas inválidas">
+    <figcaption>Figura 6: entradas inválidas na opção --entradas e nas perguntas.</figcaption></figure>
+
+  <h3>10.4 Simulador</h3>
+  <figure><img class="sim" src="img/sim_0110_simplificado.png" alt="Simulador com entradas 0110">
+    <figcaption>Figura 7: entradas 0110 no circuito simplificado. S = 1 (critério 2.3.2) e a célula m6 fica marcada no mapa.</figcaption></figure>
+  <figure><img class="sim" src="img/sim_0100_original.png" alt="Simulador com entradas 0100">
+    <figcaption>Figura 8: entradas 0100 no circuito original. O maxtermo M4 vale 0 e a saída fica S = 0.</figcaption></figure>
+  <figure><img class="sim" src="img/sim_1001_nand.png" alt="Simulador com entradas 1001">
+    <figcaption>Figura 9: entradas 1001 no circuito NAND. S = 1 (critérios 2.3.1 e 2.3.3), com o aviso sobre C e D.</figcaption></figure>
+  <figure><img class="sim" src="img/sim_invalido.png" alt="Simulador com entrada inválida">
+    <figcaption>Figura 10: a entrada "12a" é recusada.</figcaption></figure>
+
+  <h3>10.5 Montagem no logic.ly ou LogicCircuit</h3>
+  <ol>
+    <li>Abrir <span class="mono">https://logic.ly/demo/</span> (ou o LogicCircuit, <span class="mono">http://www.logiccircuit.org</span>).</li>
+    <li>Colocar 4 Toggle Switches com os nomes A, B, C e D.</li>
+    <li>Colocar uma porta AND de 2 entradas e ligar B e C nela.</li>
+    <li>Colocar uma porta OR de 3 entradas e ligar A, a saída da AND e D.</li>
+    <li>Ligar a saída da OR em uma Light Bulb com o nome S.</li>
+    <li>Testar as 16 combinações e comparar a lâmpada com a coluna S da tabela da seção 4.</li>
+    <li>Circuito original: 2 NOT (B' e C'), 3 OR de 4 entradas (M0, M2 e M4) e 1 AND de 3 entradas, como na Figura 2.</li>
+  </ol>
+</section>
+
+<section class="pb">
+  <h2>11. Testes</h2>
+  <p>Para as 16 combinações comparamos: a regra original do edital, o produto de maxtermos, a forma
+    simplificada, a forma NAND, o resultado do programa (<code>decidir()</code>) e os circuitos do simulador. A
+    tabela abaixo é calculada pelo código do simulador, e a Figura 11 mostra o mesmo teste rodando em Python.</p>
+  <table class="tv" id="val"></table>
+  <p id="valres"></p>
+  <figure><img src="img/terminal_tabela.png" alt="Teste das 16 combinações em Python">
+    <figcaption>Figura 11: <code>python -m citizen_assist --tabela</code>, 16 de 16 combinações iguais.</figcaption></figure>
+  <figure><img src="img/terminal_testes.png" alt="Testes automatizados">
+    <figcaption>Figura 12: <code>python -m unittest -v</code>, 12 testes aprovados.</figcaption></figure>
+  <figure><img src="img/sim_0001_validacao.png" alt="Teste das 16 combinações no simulador" style="max-height:200mm">
+    <figcaption>Figura 13: botão "Validar as 16 combinações" no simulador, com a entrada 0001 marcada.</figcaption></figure>
+  <table>
+    <tr><th>Teste</th><th>O que verifica</th><th>Resultado</th></tr>
+    <tr><td>test_todas_as_16_combinacoes</td><td>Tabela escrita à mão = regra original = mintermos = maxtermos = simplificada = NAND = programa</td><td class="ok">OK</td></tr>
+    <tr><td>test_mintermos_e_maxtermos</td><td>Mintermos e maxtermos não se repetem e cobrem as 16 linhas</td><td class="ok">OK</td></tr>
+    <tr><td>test_respostas_validas / test_respostas_invalidas</td><td>Aceita s/sim/1/n/não/0; recusa "", "talvez", "2", "x"</td><td class="ok">OK</td></tr>
+    <tr><td>test_vetor</td><td>Aceita "1011" e "1, 0, 1, 1"; recusa "101", "10110", "1021", "abcd"</td><td class="ok">OK</td></tr>
+    <tr><td>test_decidir_fora_de_0_1</td><td>decidir(2, 0, 0, 0) dá erro</td><td class="ok">OK</td></tr>
+    <tr><td>test_fluxo_isento / test_fluxo_nao_isento</td><td>Atendimento completo termina com S=1 ou S=0 e a mensagem certa</td><td class="ok">OK</td></tr>
+    <tr><td>test_resposta_invalida_repete</td><td>Resposta inválida mostra aviso e repete a pergunta</td><td class="ok">OK</td></tr>
+    <tr><td>test_tres_erros_encerra</td><td>Depois de 3 erros o atendimento termina</td><td class="ok">OK</td></tr>
+    <tr><td>test_aviso_inconsistencia / test_aviso_canal_nao_oficial</td><td>Os avisos aparecem</td><td class="ok">OK</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>12. Limitações e privacidade</h2>
+  <div class="aviso">Este protótipo não é um canal oficial do Inep nem do MEC e não confirma a concessão da
+    isenção nem de nenhum direito. Quem decide é o Inep, que confere os dados no Censo Escolar e no CadÚnico. Esse
+    aviso aparece no começo de todo atendimento e no simulador.</div>
+  <ul>
+    <li>Só considera os critérios do item 2.3 do edital do Enem 2026.</li>
+    <li>Não verifica datas. O pedido de isenção do Enem 2026 terminou em 30/04/2026, e para o ano seguinte as regras precisam ser conferidas no novo edital.</li>
+    <li>Não trata a justificativa de ausência de quem foi isento em 2025 e faltou (itens 1.4 e 3 do edital), o Enem PPL nem os recursos.</li>
+    <li>As respostas são autodeclaradas e o programa não confere nada.</li>
+    <li>O programa não pede nome, CPF, NIS, data de nascimento nem valor de renda, só 4 respostas de sim ou não, e não grava nada. Isso segue o princípio da necessidade da LGPD (Lei nº 13.709/2018, art. 6º, III).</li>
+  </ul>
+
+  <h2>13. Instruções de execução</h2>
+  <p>Precisa de Python 3.8 ou mais novo, sem instalar nenhuma biblioteca. Na pasta do projeto:</p>
+  <pre>python -m citizen_assist
+python -m citizen_assist --entradas 0110
+python -m citizen_assist --tabela
+python -m unittest -v</pre>
+  <p>O primeiro comando faz as perguntas, o segundo recebe A B C D direto, o terceiro testa as 16 combinações e o
+    último roda os testes.</p>
+  <p>Simulador: abrir <code>simulador/index.html</code> no navegador. Também dá para passar as entradas pela URL,
+    por exemplo <code>index.html?e=0110&amp;c=original</code> (c pode ser original, simplificado ou nand).</p>
+
+  <h2>14. Referências</h2>
+  <p class="small">Todas consultadas em 16/11/2026.</p>
+  <ol class="ref">
+    <li>BRASIL. Inep. Edital nº 21, de 25 de março de 2026. Justificativa de ausência no Enem 2025 e isenção da taxa de inscrição do Enem 2026. Diário Oficial da União, 01/04/2026, Seção 3, p. 79. Disponível em: https://abmes.org.br/arquivos/legislacoes/Edital-inep-021-2026-03-25.pdf</li>
+    <li>BRASIL. Lei nº 12.799, de 10 de abril de 2013. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/lei/l12799.htm</li>
+    <li>BRASIL. Decreto nº 11.016, de 29 de março de 2022. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2022/decreto/d11016.htm</li>
+    <li>AGÊNCIA GOV. Enem 2026: começa nesta segunda-feira (13 de abril) o prazo para solicitar a isenção da taxa de inscrição. Disponível em: https://agenciagov.ebc.com.br/noticias/202604/enem-2026-comeca-nesta-segunda-feira-13-de-abril-o-prazo-para-solicitar-a-isencao-da-taxa-de-inscricao</li>
+    <li>BRASIL. MEC. Enem 2026: prazo para isenção da taxa é estendido até 30/4. Disponível em: https://www.gov.br/mec/pt-br/assuntos/noticias/2026/abril/enem-2026-prazo-para-isencao-da-taxa-e-estendido-ate-30-4</li>
+    <li>BRASIL. Lei nº 13.709, de 14 de agosto de 2018 (LGPD). Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm</li>
+    <li>TOCCI, Ronald J.; WIDMER, Neal S.; MOSS, Gregory L. Sistemas digitais: princípios e aplicações. 11. ed. São Paulo: Pearson Prentice Hall, 2011.</li>
+  </ol>
+</section>
+
+<script src="../simulador/circuitos.js"></script>
+<script>
+(function () {
+  const CA = window.CircuitosCA;
+  const bits = (m) => [(m >> 3) & 1, (m >> 2) & 1, (m >> 1) & 1, m & 1];
+
+  let h = "<tr><th>m</th><th>A</th><th>B</th><th>C</th><th>D</th><th>R1: A</th><th>R2: B·C</th><th>R3: D</th><th>S</th></tr>";
+  for (let m = 0; m < 16; m++) {
+    const [a, b, c, d] = bits(m), s = CA.LOGICA.original(a, b, c, d);
+    h += `<tr class="${s ? "um" : ""}"><td>${m}</td><td>${a}</td><td>${b}</td><td>${c}</td><td>${d}</td>` +
+         `<td>${a}</td><td>${b & c}</td><td>${d}</td><td class="s">${s}</td></tr>`;
+  }
+  document.getElementById("tv").innerHTML = h;
+
+  let v = "<tr><th>m</th><th>ABCD</th><th>Regra original</th><th>POS canônica</th><th>A+BC+D</th><th>NAND</th><th>Circ. original</th><th>Circ. simplificado</th><th>Igual</th></tr>";
+  let ok = 0;
+  for (let m = 0; m < 16; m++) {
+    const e = bits(m), tmp = document.createElement("div");
+    const r = [CA.LOGICA.original(...e), CA.LOGICA.pos(...e), CA.LOGICA.simplificada(...e), CA.LOGICA.nand(...e),
+               CA.renderCircuito(tmp, "original", e), CA.renderCircuito(tmp, "simplificado", e)];
+    const igual = r.every((x) => x === r[0]);
+    ok += igual;
+    v += `<tr><td>${m}</td><td>${e.join("")}</td>${r.map((x) => `<td>${x}</td>`).join("")}<td class="${igual ? "ok" : ""}">${igual ? "sim" : "NÃO"}</td></tr>`;
+  }
+  document.getElementById("val").innerHTML = v;
+  document.getElementById("valres").innerHTML = `<b>${ok} de 16 combinações iguais</b> em todas as formas.`;
+
+  CA.renderKmap(document.getElementById("kmap"), -1);
+  const est = [0, 1, 1, 0];
+  CA.renderCircuito(document.getElementById("c-original"), "original", est);
+  CA.renderCircuito(document.getElementById("c-simplificado"), "simplificado", est);
+  CA.renderCircuito(document.getElementById("c-nand"), "nand", est);
+})();
+</script>
+</body>
+</html>
