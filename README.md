@@ -39,6 +39,8 @@ O primeiro comando faz as perguntas. O segundo recebe A B C D direto. O terceiro
 
 Simulador: abrir `simulador/index.html` no navegador.
 
+Relatório: `relatorio/Relatorio_Tecnico_GS26_2_CitizenAssist.pdf`
+
 ## Pastas
 
 - `citizen_assist/` - lógica e programa
